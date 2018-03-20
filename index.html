@@ -1,0 +1,52 @@
+<!-- html:5[tab] -->
+<!-- python -m http.server 3000 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>API Test</title>
+</head>
+<body>
+  <div id="wrap">
+    <h1>DRF API Test!</h1>
+    <div class="artists-container">
+      <h2>Artist List</h2>
+    </div>
+  </div>
+
+  <div id="template-artist">
+    <span class="artist-melon-id"></span>
+    <span class="artist-name"></span>
+  </div>
+
+  <script src="js/axios.js"></script>
+  <script src="js/jquery-3.3.1.min.js"></script>
+  <script>
+    // API에 HTTP GET요청
+    axios.get('http://localhost:8000/api/artist/')
+      .then(function (response) {
+        var artists = response.data.artists;
+        // 전달받은 데이터의 'artists'키에 해당하는 배열을 순회
+        for (var i = 0; i < artists.length; i++) {
+          var currentArtist = artists[i];
+          console.log(currentArtist);
+
+          // template-artist라는 ID를 가진 요소를 복제
+          var curArtistElement = $('#template-artist').clone();
+
+          // 해당 요소에서 artist-melon-id, artist-name이라는 클래스를 가진 요소의 text를 채움
+          curArtistElement.find('.artist-melon-id').text(currentArtist.melon_id);
+          curArtistElement.find('.artist-name').text(currentArtist.name);
+
+          // .artists-container내부에 위 요소를 삽입
+          $('.artists-container').append(curArtistElement);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  </script>
+</body>
+</html>
