@@ -6,47 +6,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>API Test</title>
+  <title>Melon Front</title>
+  <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-  <div id="wrap">
-    <h1>DRF API Test!</h1>
-    <div class="artists-container">
-      <h2>Artist List</h2>
-    </div>
-  </div>
+  <ul class="artist-list">
 
-  <div id="template-artist">
-    <span class="artist-melon-id"></span>
+  </ul>
+
+<div id="template">
+  <li id="artist-item-template" class="artists-container">
     <span class="artist-name"></span>
-  </div>
+    <img class="artist-img-profile" src="" alt="">
+  </li>
+</div>
+
 
   <script src="js/axios.js"></script>
   <script src="js/jquery-3.3.1.min.js"></script>
   <script>
-    // API에 HTTP GET요청
     axios.get('http://localhost:8000/api/artist/')
       .then(function (response) {
-        var artists = response.data.artists;
-        // 전달받은 데이터의 'artists'키에 해당하는 배열을 순회
-        for (var i = 0; i < artists.length; i++) {
-          var currentArtist = artists[i];
-          console.log(currentArtist);
+      //ul.artist-list
+      var artistListElement =$('.artist-list');
+      // 응답의 artist 정보목록
+      var artists = response.data.results;
+      console.log(artists);
 
-          // template-artist라는 ID를 가진 요소를 복제
-          var curArtistElement = $('#template-artist').clone();
+      for (var i = 0; i < artists.length; i++) {
+        // var currentArtist=artists[i];
+        var curArtist=artists[i]
+        console.log(artists[i]);
+        var curArtistItemElement =$('#artist-item-template').clone();
 
-          // 해당 요소에서 artist-melon-id, artist-name이라는 클래스를 가진 요소의 text를 채움
-          curArtistElement.find('.artist-melon-id').text(currentArtist.melon_id);
-          curArtistElement.find('.artist-name').text(currentArtist.name);
+        curArtistItemElement.find('.artist-name').text(curArtist.name);
+        curArtistItemElement.find('.artist-img-profile').attr('src', curArtist.img_profile)
+        artistListElement.append(curArtistItemElement);
+      }
 
-          // .artists-container내부에 위 요소를 삽입
-          $('.artists-container').append(curArtistElement);
-        }
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    }
+  )
+  .catch(function (error)
+  {
+    console.log(error);
+
+  });
+
   </script>
-</body>
-</html>
+  </body>
+  </html>
