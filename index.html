@@ -1,57 +1,107 @@
-<!-- html:5[tab] -->
-<!-- python -m http.server 3000 -->
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Melon Front</title>
-  <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-  <ul class="artist-list">
+  <h1>Melon Front!</h1>
+  <a href="artist-list.html">Artist List</a>
 
-  </ul>
+  <form action="" id="login">
+    <h3>ID</h3>
+    <input type="text" id="inputUsername">
+    <h3>Password</h3>
+    <input type="text" id="inputPassword">
+    <button id="btnsubmit">submit</button>
+  </form>
 
-<div id="template">
-  <li id="artist-item-template" class="artists-container">
-    <span class="artist-name"></span>
-    <img class="artist-img-profile" src="" alt="">
-  </li>
-</div>
-
+  <button onclick="getCookie('token')">get cookie</button>
 
   <script src="js/axios.js"></script>
   <script src="js/jquery-3.3.1.min.js"></script>
+
   <script>
-    axios.get('http://localhost:8000/api/artist/')
-      .then(function (response) {
-      //ul.artist-list
-      var artistListElement =$('.artist-list');
-      // 응답의 artist 정보목록
-      var artists = response.data.results;
-      console.log(artists);
+    // AuthToken을 받아오는 JS함수를 구현
+    // function getAuthToken(username, password){}
+    //  매개변수 username, password를 axios로 전달하고
+    // 돌아온 'token' 값을 console.log에 출력
 
-      for (var i = 0; i < artists.length; i++) {
-        // var currentArtist=artists[i];
-        var curArtist=artists[i]
-        console.log(artists[i]);
-        var curArtistItemElement =$('#artist-item-template').clone();
+    //함수를 정의한 다음에 함수를 호출
+    // 2.form#login을 구현
+    // username , pass word 를 받는 input 2개와 submit역할을 하는 button
+    //해당 form에 'submit'이 실행 되었을 때, form자체의 submit기능 대선 jquery를 사용해서
+    // 아래 getAuthToken()함수를 실행
 
-        curArtistItemElement.find('.artist-name').text(curArtist.name);
-        curArtistItemElement.find('.artist-img-profile').attr('src', curArtist.img_profile)
-        artistListElement.append(curArtistItemElement);
+    //http://stackoverflow.com/a/24103596
+    //3.링크를 참고해서 받아온 token값을 'token'쿠키 key에 7일 후 만료되도록 저장
+
+  // function clickSubmitButton() {
+  //   // console.log('testtest')
+  //   // console.log($('#inputUsername').attr('value'))
+  //   var username2 = $('#inputUsername').val();
+  //   console.log(username2)
+  //   var password2 = $('#inputPassword').val();
+  //   console.log(password2)
+  //
+  //   // getAuthToken(username2,password2);
+  // }
+  // function getAuthToken(username,password){
+  //   axios(
+  //     url:'http://localhost:8000/api/members/auth-token/'
+  //     method:'post',
+  //     data: {
+  //       username:username,
+  //       password:password
+  //   }.then(function(response){
+  //
+
+
+
+
+  // getAuthToken('hong4','tjrwo123')
+  function getAuthToken(username,password){
+    axios.post('http://localhost:8000/api/members/auth-token/',{username:username,password:password}
+    ).then(function(response){
+        var token = response.data.token
+        // console.log(response.data)
+        // console.log(response.data.token)
+        setCookie("token",token,7)
+
       }
+    )
+  }
+  $('#login').on("submit",function(event){
+    event.preventDefault();
+    var username = $("#inputUsername").val();
+    var password = $("#inputPassword").val();
+    console.log(username,password)
+    getAuthToken(username,password);
+  })
 
-    }
-  )
-  .catch(function (error)
-  {
-    console.log(error);
+  function setCookie(key,value,exdays){
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var exdate = "expires="+ d.toUTCString();
+    console.log(exdate)
+    document.cookie = key + "=" + value + ";" + exdate + ";path=/";
+  }
+  function getCookie(key){
+    var cookie = document.cookie;
+    var cookie_list = cookie.split("; ");
+    var target = key+"=";
+    var token = "";
 
-  });
-
+    $(cookie_list).each(function(index, item){
+      if (item.indexOf(target)==0) {
+        console.log(item.split("="))
+          token = item.split("=");
+        }
+        return token
+    });
+  }
   </script>
-  </body>
-  </html>
+</body>
+</html>
