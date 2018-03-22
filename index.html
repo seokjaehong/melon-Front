@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Melon Front</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
   <h1>Melon Front!</h1>
+  <p id="user-login-info" class="none"></p>
   <a href="artist-list.html">Artist List</a>
 
   <form action="" id="login">
@@ -18,67 +21,69 @@
     <button id="btnsubmit">submit</button>
   </form>
 
+
+
   <button onclick="getCookie('token')">get cookie</button>
 
   <script src="js/axios.js"></script>
   <script src="js/jquery-3.3.1.min.js"></script>
-
   <script>
-    // AuthToken을 받아오는 JS함수를 구현
-    // function getAuthToken(username, password){}
-    //  매개변수 username, password를 axios로 전달하고
-    // 돌아온 'token' 값을 console.log에 출력
-
-    //함수를 정의한 다음에 함수를 호출
-    // 2.form#login을 구현
-    // username , pass word 를 받는 input 2개와 submit역할을 하는 button
-    //해당 form에 'submit'이 실행 되었을 때, form자체의 submit기능 대선 jquery를 사용해서
-    // 아래 getAuthToken()함수를 실행
-
-    //http://stackoverflow.com/a/24103596
-    //3.링크를 참고해서 받아온 token값을 'token'쿠키 key에 7일 후 만료되도록 저장
-
-  // function clickSubmitButton() {
-  //   // console.log('testtest')
-  //   // console.log($('#inputUsername').attr('value'))
-  //   var username2 = $('#inputUsername').val();
-  //   console.log(username2)
-  //   var password2 = $('#inputPassword').val();
-  //   console.log(password2)
-  //
-  //   // getAuthToken(username2,password2);
-  // }
-  // function getAuthToken(username,password){
-  //   axios(
-  //     url:'http://localhost:8000/api/members/auth-token/'
-  //     method:'post',
-  //     data: {
-  //       username:username,
-  //       password:password
-  //   }.then(function(response){
-  //
+    if (document.cookie is not null) {}
+    // -> function initUserInfo()
+    //0. UserDetail과 /api/members/info를 연결 시키는 부분을 백엔드에 구현
+    //1. 클라이언트에 'token'이라는 Cookie가 있는지 확인
+    //2. 만약 있다면 해당 값ㅇ르 가져온 후
+    //3. getUserInfo()를 실행
+    // -> UserDetail에 get 요청 , pk없음
+    //   URL : /api/members/info/
+    //  HTTP header 'Authorization'에 Token<value>값을 담아서 요청
+    //   request.user를 기준으로 serialize한 User정보를 리턴
+    //4. 유저정보를 가져온 후 getAuthToken의 .then(아래 유저정보 표시 로직을 실행
 
 
-
-
+  </script>
+  <script>
   // getAuthToken('hong4','tjrwo123')
-  function getAuthToken(username,password){
-    axios.post('http://localhost:8000/api/members/auth-token/',{username:username,password:password}
-    ).then(function(response){
-        var token = response.data.token
-        // console.log(response.data)
-        // console.log(response.data.token)
-        setCookie("token",token,7)
+  // function getAuthToken(username,password){
+  //   axios.post('http://localhost:8000/api/members/auth-token/',{username:username,password:password}
+  //   ).then(function(response){
+  //       var token = response.data.token
+  //       // console.log(response.data)
+  //       // console.log(response.data.token)
+  //       setCookie("token",token,7)
+  //     }
+  //   )
+  // }
+  function getAuthToken (username, password) {
+      axios({
+        url: 'http://localhost:8000/api/members/auth-token/',
+        method: 'post',
+        data: {
+          username: username,
+          password: password
+        }
+      }).then(function (response) {
+        var token = response.data.token;
+        var user = response.data.user;
+        setCookie('token', token, 7);
+        //user 정보를 받아서
+        //유저 정보를 표시할 요소에 텍스트를 채움
+        $('#user-login-info').text(user.username+ '(으)로 로그인중');
+        $('#user-login-info').removeClass('none');
+        // $('#login').css("display","none")
+        $('#login').addClass('none');
+      }).catch(function (error) {
+        console.log(error);
+        console.log(error.response);
+      });
+    }
 
-      }
-    )
-  }
   $('#login').on("submit",function(event){
-    event.preventDefault();
     var username = $("#inputUsername").val();
     var password = $("#inputPassword").val();
     console.log(username,password)
     getAuthToken(username,password);
+    event.preventDefault();
   })
 
   function setCookie(key,value,exdays){
